@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+  <title>News</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      padding: 40px;
+    }
+
+    .article {
+      margin-bottom: 30px;
+    }
+
+    .article-title {
+      font-size: 22px;
+      font-weight: bold;
+    }
+
+    .article-title a {
+      text-decoration: none;
+      color: blue;
+    }
+
+    .article-title a:hover {
+      text-decoration: underline;
+    }
+
+    .preview {
+      margin-top: 10px;
+      color: #333;
+    }
+
+    .meta {
+      margin-top: 8px;
+      font-size: 14px;
+      color: #666;
+    }
+
+    hr {
+      margin-top: 20px;
+    }
+  </style>
+</head>
+<body>
+
+<h1>News</h1>
+<div class="nav">
+  <!-- Journalist + Admin -->
+  <a th:if="${#authorization.expression('hasAnyRole(''JOURNALIST'',''ADMIN'')')}"
+     href="/journalist/dashboard">
+    📰 Journalist Dashboard
+  </a>
+
+  <!-- Admin only -->
+  <a th:if="${#authorization.expression('hasRole(''ADMIN'')')}"
+     href="/admin/dashboard">
+    🛠 Admin Dashboard
+  </a>
+
+  <a href="/logout">🚪 Logout</a>
+</div>
+
+<div th:each="article : ${articles}" class="article">
+
+  <!-- ✅ Clickable title -->
+  <div class="article-title">
+    <a th:href="@{'/articles/' + ${article.id}}"
+       th:text="${article.title}">
+    </a>
+  </div>
+
+  <!-- ✅ Short preview only -->
+  <div class="preview"
+       th:text="${#strings.length(
+                 article.content.replaceAll('<[^>]*>', '')
+               ) > 150
+               ? #strings.substring(
+                   article.content.replaceAll('<[^>]*>', ''),
+                   0, 150
+                 ) + '...'
+               : article.content.replaceAll('<[^>]*>', '')}">
+  </div>
+
+
+  <!-- ✅ Author -->
+  <div class="meta">
+    By <strong th:text="${article.author.name}"></strong>
+  </div>
+
+  <hr/>
+</div>
+
+</body>
+</html>
