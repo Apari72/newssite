@@ -22,15 +22,20 @@ public class AuthController {
                                       @RequestParam String email,
                                       @RequestParam String password) {
 
-        User user = authService.registerUser(name, email, password);
-        return ResponseEntity.ok(user);
+        try {
+            User user = authService.registerUser(name, email, password);
+            return ResponseEntity.ok(user);
+        } catch (RuntimeException e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
     }
+
 
     @PostMapping("/login")
     public ResponseEntity<?> login(@RequestParam String email,
                                    @RequestParam String password) {
 
-        User user = authService.login(email, password);
+        var user = authService.login(email, password);
 
         if (user == null) {
             return ResponseEntity.status(401).body("Invalid email or password");
@@ -38,5 +43,4 @@ public class AuthController {
 
         return ResponseEntity.ok(user);
     }
-
 }

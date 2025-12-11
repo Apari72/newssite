@@ -19,6 +19,10 @@ public class ArticleService {
         this.articleRepository = articleRepository;
         this.userRepository = userRepository;
     }
+    public Article findArticle(Long id) {
+        return articleRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Article not found"));
+    }
 
     public Article createArticle(Long journalistId, String title, String content) {
         User user = userRepository.findById(journalistId)

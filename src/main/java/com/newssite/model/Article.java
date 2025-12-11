@@ -2,6 +2,7 @@ package com.newssite.model;
 
 import jakarta.persistence.*;
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Entity
 public class Article {
@@ -23,6 +24,13 @@ public class Article {
     @JoinColumn(name = "author_id")
     private User author;
 
+    @Column(name = "like_count", nullable = false)
+    private Integer likeCount = 0;
+
+    @OneToMany(mappedBy = "article", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Comment> comments;
+
+
     public Long getId() {
         return id;
     }
@@ -33,6 +41,14 @@ public class Article {
 
     public String getTitle() {
         return title;
+    }
+
+    public List<Comment> getComments() {
+        return comments;
+    }
+
+    public void setComments(List<Comment> comments) {
+        this.comments = comments;
     }
 
     public void setTitle(String title) {
@@ -70,5 +86,16 @@ public class Article {
     public void setAuthor(User author) {
         this.author = author;
     }
+
+
+    public Integer getLikeCount() {
+        return likeCount;
+    }
+
+    public void setLikeCount(Integer likeCount) {
+        this.likeCount = likeCount;
+    }
+
+
 
 }

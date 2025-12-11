@@ -1,85 +1,119 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
-  <meta charset="UTF-8">
-  <title th:text="${article.title}">Article</title>
+    <meta charset="UTF-8">
+    <title th:text="${article.title}">Article</title>
 
-  <style>
-    body {
-      font-family: Arial, sans-serif;
-      background-color: #f5f5f5;
-      margin: 0;
-      padding: 0;
-    }
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f5f5f5;
+            margin: 0;
+            padding: 0;
+        }
 
-    .container {
-      max-width: 900px;
-      margin: 40px auto;
-      background: white;
-      padding: 30px 40px;
-      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-    }
+        .container {
+            max-width: 900px;
+            margin: 40px auto;
+            background: white;
+            padding: 30px 40px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
 
-    h1 {
-      margin-bottom: 10px;
-    }
+        h1 {
+            margin-bottom: 10px;
+        }
 
-    .meta {
-      color: #666;
-      font-size: 14px;
-      margin-bottom: 20px;
-    }
+        .meta {
+            color: #666;
+            font-size: 14px;
+            margin-bottom: 20px;
+        }
 
-    .meta span {
-      margin-right: 15px;
-    }
+        .meta span {
+            margin-right: 15px;
+        }
 
-    .content {
-      line-height: 1.6;
-      font-size: 16px;
-    }
+        .back {
+            margin-top: 30px;
+            display: inline-block;
+            text-decoration: none;
+            color: #007bff;
+        }
 
-    .back {
-      margin-top: 30px;
-      display: inline-block;
-      text-decoration: none;
-      color: #007bff;
-    }
+        .back:hover {
+            text-decoration: underline;
+        }
 
-    .back:hover {
-      text-decoration: underline;
-    }
-  </style>
+        button.like-btn {
+            font-size: 18px;
+            padding: 6px 12px;
+            cursor: pointer;
+            border: none;
+            background: none;
+        }
+    </style>
 </head>
 <body>
 
 <div class="container">
 
-  <!-- Article title -->
-  <h1 th:text="${article.title}"></h1>
+    <h1 th:text="${article.title}"></h1>
 
-  <!-- Article metadata -->
-  <div class="meta">
+    <div class="meta">
         <span>
             By <strong th:text="${article.author.name}"></strong>
         </span>
-    <span>
+        <span>
             Views: <strong th:text="${article.views}"></strong>
         </span>
-    <span th:if="${article.createdAt != null}">
+        <span th:if="${article.createdAt != null}">
             Published:
             <strong th:text="${#temporals.format(article.createdAt, 'dd MMM yyyy HH:mm')}"></strong>
         </span>
-  </div>
+    </div>
 
-  <hr/>
+    <hr/>
 
-  <!-- Article content (IMPORTANT: render HTML) -->
-  <div class="content" th:utext="${article.content}"></div>
+    <!-- LIKE / UNLIKE BUTTON -->
+    <form th:action="@{'/articles/' + ${article.id} + '/like'}" method="post" style="margin-bottom: 20px;">
+        <button type="submit" class="like-btn">
+            <span th:if="${hasLiked}">💔 Unlike</span>
+            <span th:unless="${hasLiked}">❤️ Like</span>
+        </button>
 
-  <!-- Back link -->
-  <a class="back" href="/articles">← Back to Articles</a>
+        <span style="margin-left: 10px; font-size: 18px;">
+            👍 <span th:text="${article.likeCount}"></span>
+        </span>
+    </form>
 
+    <div th:utext="${article.content}"></div>
+
+    <a class="back" href="/articles">← Back to Articles</a>
+
+</div>
+
+<hr>
+
+<h3>Comments</h3>
+
+<div>
+    <form th:action="@{/comments}" method="post">
+        <input type="hidden" name="articleId" th:value="${article.id}">
+        <textarea name="content" placeholder="Write a comment..." required></textarea>
+        <button type="submit">Post Comment</button>
+    </form>
+</div>
+
+<br>
+
+<div th:each="comment : ${comments}">
+    <p>
+        <strong th:text="${comment.authorName}"></strong>
+        <small th:text="${#temporals.format(comment.createdAt, 'dd MMM yyyy HH:mm')}"></small>
+    </p>
+    <p th:text="${comment.content}"></p>
+    <hr>
 </div>
 
 </body>

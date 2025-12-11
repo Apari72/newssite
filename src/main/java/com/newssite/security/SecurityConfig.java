@@ -21,12 +21,14 @@ public class SecurityConfig {
                         .requestMatchers(
                                 "/",
                                 "/login",
+                                "/register",
                                 "/api/auth/**",
                                 "/api/articles/**",
                                 "/css/**",
                                 "/js/**",
                                 "/images/**"
                         ).permitAll()
+
                         .requestMatchers("/admin/**").hasRole("ADMIN")
                         .requestMatchers("/journalist/**").hasAnyRole("JOURNALIST", "ADMIN")
                         .anyRequest().authenticated()

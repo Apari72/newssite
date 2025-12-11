@@ -20,9 +20,30 @@ public class AuthService {
         this.passwordEncoder = passwordEncoder;
     }
 
+    // ----------------------
+    //     REGISTER USER
+    // ----------------------
+    public User registerUser(String name, String email, String rawPassword) {
+
+        if (userRepository.findByEmail(email).isPresent()) {
+            throw new RuntimeException("Email already registered");
+        }
+
+        User user = new User();
+        user.setName(name);
+        user.setEmail(email);
+        user.setPasswordHash(passwordEncoder.encode(rawPassword));
+        user.setRole(Role.USER); // default role
+
+        return userRepository.save(user);
+    }
+
+    // ----------------------
+    //        LOGIN
+    // ----------------------
     public User login(String email, String rawPassword) {
-        User user = userRepository.findByEmail(email)
-                .orElse(null);
+
+        User user = userRepository.findByEmail(email).orElse(null);
 
         if (user == null) {
             return null;
@@ -33,19 +54,5 @@ public class AuthService {
         }
 
         return user;
-    }
-
-    public User registerUser(String name, String email, String rawPassword) {
-        if (userRepository.findByEmail(email).isPresent()) {
-            throw new RuntimeException("Email already exists");
-        }
-
-        User user = new User();
-        user.setName(name);
-        user.setEmail(email);
-        user.setPasswordHash(passwordEncoder.encode(rawPassword));
-        user.setRole(Role.USER);
-
-        return userRepository.save(user);
     }
 }
