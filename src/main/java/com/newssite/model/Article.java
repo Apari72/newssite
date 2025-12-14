@@ -1,6 +1,9 @@
 package com.newssite.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
+
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -20,16 +23,28 @@ public class Article {
 
     private LocalDateTime createdAt = LocalDateTime.now();
 
+    /**
+     * Prevent infinite loop:
+     * Article -> User -> Articles -> User -> ...
+     * Also prevents leaking sensitive fields.
+     */
     @ManyToOne
     @JoinColumn(name = "author_id")
+    @JsonIgnoreProperties({"articles", "passwordHash"})
     private User author;
 
     @Column(name = "like_count", nullable = false)
     private Integer likeCount = 0;
 
+    /**
+     * Prevent infinite loop:
+     * Article -> Comments -> Article -> Comments -> ...
+     */
     @OneToMany(mappedBy = "article", cascade = CascadeType.ALL, orphanRemoval = true)
+    @JsonIgnore
     private List<Comment> comments;
 
+    // ---------------- GETTERS & SETTERS ----------------
 
     public Long getId() {
         return id;
@@ -41,14 +56,6 @@ public class Article {
 
     public String getTitle() {
         return title;
-    }
-
-    public List<Comment> getComments() {
-        return comments;
-    }
-
-    public void setComments(List<Comment> comments) {
-        this.comments = comments;
     }
 
     public void setTitle(String title) {
@@ -87,7 +94,6 @@ public class Article {
         this.author = author;
     }
 
-
     public Integer getLikeCount() {
         return likeCount;
     }
@@ -96,6 +102,11 @@ public class Article {
         this.likeCount = likeCount;
     }
 
+    public List<Comment> getComments() {
+        return comments;
+    }
 
-
+    public void setComments(List<Comment> comments) {
+        this.comments = comments;
+    }
 }

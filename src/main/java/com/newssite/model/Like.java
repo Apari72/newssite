@@ -13,15 +13,13 @@ public class Like {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @ManyToOne
-    @JoinColumn(name = "user_id", nullable = false)
+    @ManyToOne(optional = false)
+    @JoinColumn(name = "user_id")
     private User user;
 
-    @ManyToOne
-    @JoinColumn(name = "article_id", nullable = false)
+    @ManyToOne(optional = false)
+    @JoinColumn(name = "article_id")
     private Article article;
-
-    public Like() {}
 
     public Long getId() {
         return id;
@@ -47,3 +45,4 @@ public class Like {
         this.article = article;
     }
 }
+

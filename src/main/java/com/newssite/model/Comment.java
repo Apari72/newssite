@@ -1,5 +1,6 @@
 package com.newssite.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import java.time.LocalDateTime;
 
@@ -11,26 +12,57 @@ public class Comment {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private String authorName;
-
-    @Column(columnDefinition = "TEXT")
+    @Column(columnDefinition = "TEXT", nullable = false)
     private String content;
 
     private LocalDateTime createdAt = LocalDateTime.now();
 
-    // Many comments → 1 article
-    @ManyToOne
-    @JoinColumn(name = "article_id")
+    @ManyToOne(optional = false)
+    @JoinColumn(name = "user_id", nullable = false)
+    private User user;
+
+    @ManyToOne(optional = false)
+    @JoinColumn(name = "article_id", nullable = false)
     private Article article;
 
-    public Long getId() { return id; }
-    public String getAuthorName() { return authorName; }
-    public String getContent() { return content; }
-    public LocalDateTime getCreatedAt() { return createdAt; }
-    public Article getArticle() { return article; }
+    public Long getId() {
+        return id;
+    }
 
-    public void setId(Long id) { this.id = id; }
-    public void setAuthorName(String authorName) { this.authorName = authorName; }
-    public void setContent(String content) { this.content = content; }
-    public void setArticle(Article article) { this.article = article; }
+    public void setId(Long id) {
+        this.id = id;
+    }
+
+    public String getContent() {
+        return content;
+    }
+
+    public void setContent(String content) {
+        this.content = content;
+    }
+
+    public LocalDateTime getCreatedAt() {
+        return createdAt;
+    }
+
+    public void setCreatedAt(LocalDateTime createdAt) {
+        this.createdAt = createdAt;
+    }
+
+    public User getUser() {
+        return user;
+    }
+
+    public void setUser(User user) {
+        this.user = user;
+    }
+
+    public Article getArticle() {
+        return article;
+    }
+
+    public void setArticle(Article article) {
+        this.article = article;
+    }
 }
+

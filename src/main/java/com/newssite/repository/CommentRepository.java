@@ -10,4 +10,6 @@ public interface CommentRepository extends JpaRepository<Comment, Long> {
 
     List<Comment> findByArticleOrderByCreatedAtDesc(Article article);
 
+    boolean existsByIdAndUserId(Long id, Long userId);
 }
+

@@ -1,10 +1,14 @@
 package com.newssite.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
+
 import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "users")
+@JsonIgnoreProperties({"passwordHash"}) // extra safety
 public class User {
 
     @Id
@@ -16,6 +20,10 @@ public class User {
     @Column(unique = true)
     private String email;
 
+    /**
+     * NEVER expose password hashes
+     */
+    @JsonIgnore
     private String passwordHash;
 
     @Enumerated(EnumType.STRING)
@@ -25,33 +33,65 @@ public class User {
 
     private LocalDateTime createdAt = LocalDateTime.now();
 
-    // ---------- Getters & Setters ----------
+    // ---------------- GETTERS & SETTERS ----------------
 
-    public Long getId() { return id; }
+    public Long getId() {
+        return id;
+    }
 
-    public void setId(Long id) { this.id = id; }
+    public void setId(Long id) {
+        this.id = id;
+    }
 
-    public String getName() { return name; }
+    public String getName() {
+        return name;
+    }
 
-    public void setName(String name) { this.name = name; }
+    public void setName(String name) {
+        this.name = name;
+    }
 
-    public String getEmail() { return email; }
+    public String getEmail() {
+        return email;
+    }
 
-    public void setEmail(String email) { this.email = email; }
+    public void setEmail(String email) {
+        this.email = email;
+    }
 
-    public String getPasswordHash() { return passwordHash; }
+    /**
+     * Getter exists for internal use (auth),
+     * but JSON will ignore it due to @JsonIgnore on field.
+     */
+    public String getPasswordHash() {
+        return passwordHash;
+    }
 
-    public void setPasswordHash(String passwordHash) { this.passwordHash = passwordHash; }
+    public void setPasswordHash(String passwordHash) {
+        this.passwordHash = passwordHash;
+    }
 
-    public Role getRole() { return role; }
+    public Role getRole() {
+        return role;
+    }
 
-    public void setRole(Role role) { this.role = role; }
+    public void setRole(Role role) {
+        this.role = role;
+    }
 
-    public Integer getFollowersCount() { return followersCount; }
+    public Integer getFollowersCount() {
+        return followersCount;
+    }
 
-    public void setFollowersCount(Integer followersCount) { this.followersCount = followersCount; }
+    public void setFollowersCount(Integer followersCount) {
+        this.followersCount = followersCount;
+    }
 
-    public LocalDateTime getCreatedAt() { return createdAt; }
+    public LocalDateTime getCreatedAt() {
+        return createdAt;
+    }
 
-    public void setCreatedAt(LocalDateTime createdAt) { this.createdAt = createdAt; }
+    public void setCreatedAt(LocalDateTime createdAt) {
+        this.createdAt = createdAt;
+    }
 }

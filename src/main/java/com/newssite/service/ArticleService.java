@@ -6,6 +6,7 @@ import com.newssite.model.User;
 import com.newssite.repository.ArticleRepository;
 import com.newssite.repository.UserRepository;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
@@ -52,4 +53,6 @@ public class ArticleService {
         article.setViews(article.getViews() + 1);
         return articleRepository.save(article);
     }
+
+
 }

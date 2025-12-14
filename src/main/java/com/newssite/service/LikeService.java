@@ -25,17 +25,23 @@ public class LikeService {
     }
 
     @Transactional
-    public void toggleLike(Long articleId, String email) {
+    public Article toggleLike(Long articleId, String email) {
 
-        User user = userRepository.findByEmail(email).orElseThrow();
-        Article article = articleRepository.findById(articleId).orElseThrow();
+        User user = userRepository.findByEmail(email)
+                .orElseThrow(() -> new RuntimeException("User not found"));
 
-        boolean hasLiked = likeRepository.existsByUserAndArticle(user, article);
+        Article article = articleRepository.findById(articleId)
+                .orElseThrow(() -> new RuntimeException("Article not found"));
 
-        if (hasLiked) {
-            likeRepository.deleteByUserAndArticle(user, article);
+        Like existingLike =
+                likeRepository.findByUserIdAndArticleId(user.getId(), article.getId());
+
+        if (existingLike != null) {
+            // UNLIKE
+            likeRepository.delete(existingLike);
             article.setLikeCount(article.getLikeCount() - 1);
         } else {
+            // LIKE
             Like like = new Like();
             like.setUser(user);
             like.setArticle(article);
@@ -43,15 +49,21 @@ public class LikeService {
             article.setLikeCount(article.getLikeCount() + 1);
         }
 
-        articleRepository.save(article);
+        return articleRepository.save(article);
     }
 
+
+
+
+
     public boolean userHasLiked(String email, Long articleId) {
-        User user = userRepository.findByEmail(email).orElseThrow();
-        Article article = articleRepository.findById(articleId).orElseThrow();
-        return likeRepository.existsByUserAndArticle(user, article);
-    }
-}
+
+        User user = userRepository.findByEmail(email)
+                .orElseThrow(() -> new RuntimeException("User not found"));
+
+        return likeRepository.findByUserIdAndArticleId(user.getId(), articleId) != null;
+    }}
+
 
 
 
