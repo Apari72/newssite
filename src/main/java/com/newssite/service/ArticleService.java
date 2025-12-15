@@ -1,5 +1,6 @@
 package com.newssite.service;
 
+import com.newssite.dto.ArticleSummaryDto;
 import com.newssite.model.Article;
 import com.newssite.model.Role;
 import com.newssite.model.User;
@@ -16,43 +17,57 @@ public class ArticleService {
     private final ArticleRepository articleRepository;
     private final UserRepository userRepository;
 
-    public ArticleService(ArticleRepository articleRepository, UserRepository userRepository) {
+    public ArticleService(ArticleRepository articleRepository,
+                          UserRepository userRepository) {
         this.articleRepository = articleRepository;
         this.userRepository = userRepository;
     }
-    public Article findArticle(Long id) {
-        return articleRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Article not found"));
-    }
 
-    public Article createArticle(Long journalistId, String title, String content) {
-        User user = userRepository.findById(journalistId)
+    // ---------- CREATE ARTICLE (JOURNALIST / ADMIN) ----------
+    @Transactional
+    public ArticleSummaryDto createArticle(String email, String title, String content) {
+
+        User author = userRepository.findByEmail(email)
                 .orElseThrow(() -> new RuntimeException("User not found"));
 
-        if (user.getRole() != Role.JOURNALIST && user.getRole() != Role.ADMIN) {
-            throw new RuntimeException("Only journalists or admins can publish articles");
+        if (author.getRole() != Role.JOURNALIST && author.getRole() != Role.ADMIN) {
+            throw new RuntimeException("Forbidden");
         }
-
 
         Article article = new Article();
         article.setTitle(title);
         article.setContent(content);
-        article.setAuthor(user);
+        article.setAuthor(author);
 
-        return articleRepository.save(article);
+        Article saved = articleRepository.save(article);
+        return toSummaryDto(saved);
     }
 
+    // ---------- GET ALL ----------
     public List<Article> getAllArticles() {
         return articleRepository.findAll();
     }
 
+    // ---------- GET SINGLE + VIEW INCREMENT ----------
+    @Transactional
     public Article getArticle(Long id) {
         Article article = articleRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Article not found"));
 
         article.setViews(article.getViews() + 1);
-        return articleRepository.save(article);
+        return article;
     }
 
+    // ---------- DTO MAPPER ----------
+    private ArticleSummaryDto toSummaryDto(Article article) {
+        return new ArticleSummaryDto(
+                article.getId(),
+                article.getTitle(),
+                article.getAuthor().getName(),
+                article.getCreatedAt(),
+                article.getViews(),
+                article.getLikeCount()
+        );
+    }
 
 }

@@ -1,13 +1,22 @@
 package com.newssite.controller;
 
+import com.newssite.dto.ArticleCreateRequest;
+import com.newssite.dto.ArticleSummaryDto;
 import com.newssite.model.Article;
 import com.newssite.service.ArticleService;
 import com.newssite.service.LikeService;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.List;
+import java.util.Map;
+import java.util.UUID;
 
 @RestController
 @RequestMapping("/api/articles")
@@ -21,14 +30,18 @@ public class ArticleController {
         this.likeService = likeService;
     }
 
-    @PostMapping("/create")
-    public Article create(
-            @RequestParam Long journalistId,
-            @RequestParam String title,
-            @RequestParam String content
+    @PostMapping
+    public ArticleSummaryDto createArticle(
+            @RequestBody ArticleCreateRequest request,
+            @AuthenticationPrincipal UserDetails user
     ) {
-        return articleService.createArticle(journalistId, title, content);
+        return articleService.createArticle(
+                user.getUsername(),
+                request.getTitle(),
+                request.getContent()
+        );
     }
+
 
     @GetMapping
     public List<Article> list() {
@@ -51,6 +64,7 @@ public class ArticleController {
 
         return likeService.toggleLike(id, userDetails.getUsername());
     }
+
 
 }
 

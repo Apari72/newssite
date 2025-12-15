@@ -42,9 +42,12 @@ public class JournalistProfileService {
                         .map(a -> new ArticleSummaryDto(
                                 a.getId(),
                                 a.getTitle(),
+                                a.getAuthor().getName(),
+                                a.getCreatedAt(),
                                 a.getViews(),
-                                a.getCreatedAt()
+                                a.getLikeCount()
                         ))
+
                         .toList();
 
         return new JournalistProfileDto(

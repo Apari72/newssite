@@ -24,7 +24,6 @@ public class SecurityConfig {
                 .cors(cors -> cors.configurationSource(corsConfigurationSource()))
                 .csrf(csrf -> csrf.disable())
                 .authorizeHttpRequests(auth -> auth
-                        // public pages
                         .requestMatchers(
                                 "/",
                                 "/login",
@@ -34,22 +33,31 @@ public class SecurityConfig {
                                 "/images/**"
                         ).permitAll()
 
-                        // public API (READ)
+                        // static images
+                        .requestMatchers("/uploads/**").permitAll()
+
+                        // public API
                         .requestMatchers(HttpMethod.GET, "/api/articles/**").permitAll()
 
-                        // authenticated API (WRITE)
-                        .requestMatchers(
-                                "/api/articles/*/like",
-                                "/api/comments/**"
-                        ).authenticated()
+                        // image upload
+                        .requestMatchers(HttpMethod.POST, "/api/uploads/**")
+                        .hasAnyRole("JOURNALIST", "ADMIN")
 
-                        // role-based
+                        // article creation
+                        .requestMatchers(HttpMethod.POST, "/api/articles")
+                        .hasAnyRole("JOURNALIST", "ADMIN")
+
+                        // comments & likes
+                        .requestMatchers("/api/articles/*/like", "/api/comments/**")
+                        .authenticated()
+
+                        // admin
                         .requestMatchers("/admin/**").hasRole("ADMIN")
-                        .requestMatchers("/journalist/**").hasAnyRole("JOURNALIST", "ADMIN")
-                        .requestMatchers(HttpMethod.GET, "/api/journalists/**").permitAll()
+                        .requestMatchers("/api/admin/**").hasRole("ADMIN")
 
                         .anyRequest().authenticated()
                 )
+
 
                 .formLogin(form -> form
                         .loginPage("/login")

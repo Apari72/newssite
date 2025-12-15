@@ -4,6 +4,8 @@ import com.newssite.model.User;
 import com.newssite.service.AuthService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -43,4 +45,15 @@ public class AuthController {
 
         return ResponseEntity.ok(user);
     }
+    @GetMapping("/me")
+    public ResponseEntity<?> me(@AuthenticationPrincipal UserDetails user) {
+        if (user == null) {
+            return ResponseEntity.ok(null);
+        }
+
+        return ResponseEntity.ok(
+                authService.findByEmail(user.getUsername())
+        );
+    }
+
 }
