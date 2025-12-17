@@ -16,29 +16,28 @@ public class JournalistProfile {
 
     private String bio;
 
-    private Double ratingScore = 0.0;
+    public Long getId() {
+        return id;
+    }
 
-    private Integer totalViews = 0;
+    public void setId(Long id) {
+        this.id = id;
+    }
 
-    // ---------- Getters & Setters ----------
+    public User getUser() {
+        return user;
+    }
 
-    public Long getId() { return id; }
+    public void setUser(User user) {
+        this.user = user;
+    }
 
-    public void setId(Long id) { this.id = id; }
+    public String getBio() {
+        return bio;
+    }
 
-    public User getUser() { return user; }
-
-    public void setUser(User user) { this.user = user; }
-
-    public String getBio() { return bio; }
-
-    public void setBio(String bio) { this.bio = bio; }
-
-    public Double getRatingScore() { return ratingScore; }
-
-    public void setRatingScore(Double ratingScore) { this.ratingScore = ratingScore; }
-
-    public Integer getTotalViews() { return totalViews; }
-
-    public void setTotalViews(Integer totalViews) { this.totalViews = totalViews; }
+    public void setBio(String bio) {
+        this.bio = bio;
+    }
 }
+

@@ -44,8 +44,7 @@ public class AdminService {
         JournalistProfile profile = new JournalistProfile();
         profile.setUser(user);
         profile.setBio("New Journalist");
-        profile.setRatingScore(0.0);
-        profile.setTotalViews(0);
+
 
         return journalistProfileRepository.save(profile);
     }
