@@ -5,6 +5,7 @@ import com.newssite.dto.ArticleSummaryDto;
 import com.newssite.model.Article;
 import com.newssite.service.ArticleService;
 import com.newssite.service.LikeService;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
@@ -44,14 +45,24 @@ public class ArticleController {
 
 
     @GetMapping
-    public List<Article> list() {
-        return articleService.getAllArticles();
+    public List<Article> list(Authentication authentication) {
+        return articleService.getAllArticles(
+                authentication != null ? authentication.getName() : null
+        );
     }
 
+
     @GetMapping("/{id}")
-    public Article read(@PathVariable Long id) {
-        return articleService.getArticle(id);
+    public Article read(
+            @PathVariable Long id,
+            Authentication authentication
+    ) {
+        return articleService.getArticle(
+                id,
+                authentication != null ? authentication.getName() : null
+        );
     }
+
 
     @PostMapping("/{id}/like")
     public Article like(
@@ -64,6 +75,28 @@ public class ArticleController {
 
         return likeService.toggleLike(id, userDetails.getUsername());
     }
+    @PutMapping("/{id}")
+    public Article updateArticle(
+            @PathVariable Long id,
+            @RequestBody Map<String, String> body,
+            Authentication authentication
+    ) {
+        return articleService.updateArticle(
+                id,
+                body.get("title"),
+                body.get("content"),
+                authentication.getName()
+        );
+    }
+
+    @DeleteMapping("/{id}")
+    public void deleteArticle(
+            @PathVariable Long id,
+            Authentication authentication
+    ) {
+        articleService.deleteArticle(id, authentication.getName());
+    }
+
 
 
 }

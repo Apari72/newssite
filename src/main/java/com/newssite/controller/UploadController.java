@@ -14,21 +14,26 @@ import java.util.UUID;
 @RequestMapping("/api/uploads")
 public class UploadController {
 
+    private static final Path UPLOAD_DIR = Paths.get("uploads");
+
     @PostMapping("/image")
     public Map<String, String> uploadImage(
             @RequestParam("file") MultipartFile file
     ) throws IOException {
 
-        String original = file.getOriginalFilename()
-                .replaceAll("[^a-zA-Z0-9.]", "_");
+        Files.createDirectories(UPLOAD_DIR);
 
-        String filename = UUID.randomUUID() + "_" + original;
-        Path path = Paths.get("uploads", filename);
+        String filename = UUID.randomUUID() + "_" +
+                file.getOriginalFilename().replaceAll("\\s+", "_");
 
-        Files.createDirectories(path.getParent());
-        Files.write(path, file.getBytes());
+        Path filePath = UPLOAD_DIR.resolve(filename);
+        Files.write(filePath, file.getBytes());
 
-        return Map.of("url", "/uploads/" + filename);
+        return Map.of(
+                "url", "/uploads/" + filename
+        );
     }
-
 }
+
+
+

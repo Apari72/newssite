@@ -28,6 +28,17 @@ public class Article {
      * Article -> User -> Articles -> User -> ...
      * Also prevents leaking sensitive fields.
      */
+    @Transient
+    private boolean canEdit;
+
+    public boolean isCanEdit() {
+        return canEdit;
+    }
+
+    public void setCanEdit(boolean canEdit) {
+        this.canEdit = canEdit;
+    }
+
     @ManyToOne
     @JoinColumn(name = "author_id")
     @JsonIgnoreProperties({"articles", "passwordHash"})
