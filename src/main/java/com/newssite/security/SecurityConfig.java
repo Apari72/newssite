@@ -33,7 +33,7 @@ public class SecurityConfig {
                                 "/images/**",
                                 "/uploads/**"
                         ).permitAll()
-
+                        .requestMatchers("/uploads/**").permitAll()
                         // ---------- PUBLIC API (READ ONLY) ----------
                         .requestMatchers(HttpMethod.GET, "/api/articles/**").permitAll()
 

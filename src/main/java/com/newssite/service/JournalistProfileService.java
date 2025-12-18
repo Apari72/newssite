@@ -63,7 +63,7 @@ public class JournalistProfileService {
                         (requester.getRole() == Role.ADMIN ||
                                 requester.getId().equals(journalist.getId()));
 
-        List<Article> articles = articleRepo.findByAuthorId(journalist.getId());
+        List<Article> articles = articleRepo.findByAuthorIdOrderByCreatedAtDesc(userId);
 
         int totalArticles = articles.size();
         long totalViews = articles.stream().mapToLong(Article::getViews).sum();

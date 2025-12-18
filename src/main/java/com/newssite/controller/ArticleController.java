@@ -10,7 +10,7 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
-
+import com.newssite.dto.ArticleUpdateRequest;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -39,15 +39,21 @@ public class ArticleController {
         return articleService.createArticle(
                 user.getUsername(),
                 request.getTitle(),
-                request.getContent()
+                request.getContent(),
+                request.getCategory(), // Pass Category
+                request.getImageUrl()  // Pass Image URL
         );
     }
 
 
     @GetMapping
-    public List<ArticleSummaryDto> list(Authentication authentication) { // Change return type
+    public List<ArticleSummaryDto> list(
+            Authentication authentication,
+            @RequestParam(required = false) String category // <--- ADD THIS
+    ) {
         return articleService.getAllArticles(
-                authentication != null ? authentication.getName() : null
+                authentication != null ? authentication.getName() : null,
+                category // <--- Pass it to service
         );
     }
 
@@ -78,13 +84,15 @@ public class ArticleController {
     @PutMapping("/{id}")
     public Article updateArticle(
             @PathVariable Long id,
-            @RequestBody Map<String, String> body,
+            @RequestBody ArticleUpdateRequest request, // Use DTO instead of Map
             Authentication authentication
     ) {
         return articleService.updateArticle(
                 id,
-                body.get("title"),
-                body.get("content"),
+                request.getTitle(),
+                request.getContent(),
+                request.getCategory(), // Pass category
+                request.getImageUrl(), // Pass image URL
                 authentication.getName()
         );
     }

@@ -1,5 +1,6 @@
 package com.newssite.controller;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -14,26 +15,30 @@ import java.util.UUID;
 @RequestMapping("/api/uploads")
 public class UploadController {
 
-    private static final Path UPLOAD_DIR = Paths.get("uploads");
+    // Read directory from application.properties
+    @Value("${file.upload-dir}")
+    private String uploadDir;
 
     @PostMapping("/image")
-    public Map<String, String> uploadImage(
-            @RequestParam("file") MultipartFile file
-    ) throws IOException {
+    public Map<String, String> uploadImage(@RequestParam("file") MultipartFile file) throws IOException {
 
-        Files.createDirectories(UPLOAD_DIR);
+        // Use the configured path
+        Path uploadPath = Paths.get(uploadDir);
 
-        String filename = UUID.randomUUID() + "_" +
-                file.getOriginalFilename().replaceAll("\\s+", "_");
+        if (!Files.exists(uploadPath)) {
+            Files.createDirectories(uploadPath);
+        }
 
-        Path filePath = UPLOAD_DIR.resolve(filename);
+        // Sanitize filename to prevent issues on servers
+        String originalName = file.getOriginalFilename();
+        if (originalName == null) originalName = "image.jpg";
+
+        String filename = UUID.randomUUID() + "_" + originalName.replaceAll("[^a-zA-Z0-9.-]", "_");
+
+        Path filePath = uploadPath.resolve(filename);
         Files.write(filePath, file.getBytes());
 
-        return Map.of(
-                "url", "/uploads/" + filename
-        );
+        // Return the relative URL (Frontend will prepend server domain if needed)
+        return Map.of("url", "/uploads/" + filename);
     }
 }
-
-
-

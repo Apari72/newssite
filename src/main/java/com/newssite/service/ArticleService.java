@@ -25,8 +25,9 @@ public class ArticleService {
     }
 
     // ---------- CREATE ARTICLE (JOURNALIST / ADMIN) ----------
+    // Update arguments to include category and imageUrl
     @Transactional
-    public ArticleSummaryDto createArticle(String email, String title, String content) {
+    public ArticleSummaryDto createArticle(String email, String title, String content, String category, String imageUrl) {
 
         User author = userRepository.findByEmail(email)
                 .orElseThrow(() -> new RuntimeException("User not found"));
@@ -40,23 +41,35 @@ public class ArticleService {
         article.setContent(content);
         article.setAuthor(author);
 
+        // --- NEW FIELDS ---
+        article.setCategory(category != null ? category : "General");
+        article.setImageUrl(imageUrl); // <--- Save the URL to DB!
+        // ------------------
+
         Article saved = articleRepository.save(article);
         return toSummaryDto(saved);
     }
 
     // ---------- GET ALL ----------
-    public List<ArticleSummaryDto> getAllArticles(String email) {
+    // Update the method signature to accept 'category'
+    public List<ArticleSummaryDto> getAllArticles(String email, String category) {
 
         User user = null;
         if (email != null) {
             user = userRepository.findByEmail(email).orElse(null);
         }
 
-        List<Article> articles = articleRepository.findAll();
+        List<Article> articles;
 
-        // Convert the raw Entities into your DTOs
+        // FILTERING LOGIC
+        if (category != null && !category.isEmpty() && !category.equals("All")) {
+            articles = articleRepository.findByCategoryOrderByCreatedAtDesc(category);
+        } else {
+            articles = articleRepository.findAllByOrderByCreatedAtDesc();
+        }
+
         return articles.stream()
-                .map(this::toSummaryDto) // This converts Entity -> DTO (populating journalistName)
+                .map(this::toSummaryDto)
                 .collect(Collectors.toList());
     }
 
@@ -102,7 +115,8 @@ public class ArticleService {
 
     }
     @Transactional
-    public Article updateArticle(Long id, String title, String content, String email) {
+    // UPDATE THE SIGNATURE to accept category and imageUrl
+    public Article updateArticle(Long id, String title, String content, String category, String imageUrl, String email) {
         Article article = articleRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Article not found"));
 
@@ -116,8 +130,12 @@ public class ArticleService {
             throw new RuntimeException("Forbidden");
         }
 
+        // UPDATE FIELDS
         article.setTitle(title);
         article.setContent(content);
+        // Add these two lines:
+        article.setCategory(category);
+        article.setImageUrl(imageUrl);
 
         return articleRepository.save(article);
     }

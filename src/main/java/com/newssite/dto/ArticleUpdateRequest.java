@@ -1,11 +1,12 @@
 package com.newssite.dto;
 
-public class ArticleCreateRequest {
+public class ArticleUpdateRequest {
     private String title;
     private String content;
-    private String category; // Add if missing
-    private String imageUrl; // <--- ADD THIS
+    private String category;
+    private String imageUrl;
 
+    // Getters and Setters
     public String getTitle() { return title; }
     public void setTitle(String title) { this.title = title; }
 
@@ -15,6 +16,6 @@ public class ArticleCreateRequest {
     public String getCategory() { return category; }
     public void setCategory(String category) { this.category = category; }
 
-    public String getImageUrl() { return imageUrl; }       // <--- ADD THIS
-    public void setImageUrl(String imageUrl) { this.imageUrl = imageUrl; } // <--- ADD THIS
+    public String getImageUrl() { return imageUrl; }
+    public void setImageUrl(String imageUrl) { this.imageUrl = imageUrl; }
 }

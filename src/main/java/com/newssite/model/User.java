@@ -20,9 +20,7 @@ public class User {
     @Column(unique = true)
     private String email;
 
-    /**
-     * NEVER expose password hashes
-     */
+
     @JsonIgnore
     private String passwordHash;
 
@@ -59,10 +57,7 @@ public class User {
         this.email = email;
     }
 
-    /**
-     * Getter exists for internal use (auth),
-     * but JSON will ignore it due to @JsonIgnore on field.
-     */
+
     public String getPasswordHash() {
         return passwordHash;
     }
