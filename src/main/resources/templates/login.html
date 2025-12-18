@@ -1,34 +1,191 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
-  <title>Login</title>
+  <title>Sign In - The Gilded Press</title>
   <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <style>
+    :root {
+      --color-black: #000000;
+      --color-gold: #D4AF37;
+      --color-gold-dark: #b5952f;
+      --color-white: #ffffff;
+      --color-gray: #f4f4f4;
+      --font-serif: 'Georgia', 'Times New Roman', serif;
+      --font-sans: 'Arial', sans-serif;
+    }
+
+    body {
+      margin: 0;
+      font-family: var(--font-sans);
+      background-color: var(--color-gray);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      min-height: 100vh;
+    }
+
+    /* --- BRANDED HEADER --- */
+    .login-header {
+      background-color: var(--color-black);
+      width: 100%;
+      padding: 20px 0;
+      text-align: center;
+      margin-bottom: 50px;
+      border-bottom: 4px solid var(--color-gold);
+    }
+
+    .logo {
+      font-family: var(--font-serif);
+      font-size: 2rem;
+      font-weight: 900;
+      color: var(--color-white);
+      letter-spacing: 2px;
+      text-decoration: none;
+    }
+
+    .gold-text {
+      color: var(--color-gold);
+    }
+
+    /* --- LOGIN CARD --- */
+    .login-container {
+      background: var(--color-white);
+      padding: 40px;
+      width: 100%;
+      max-width: 400px;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+      border-top: 5px solid var(--color-black);
+    }
+
+    h2 {
+      font-family: var(--font-serif);
+      text-align: center;
+      font-size: 2rem;
+      margin-bottom: 30px;
+      color: var(--color-black);
+    }
+
+    .form-group {
+      margin-bottom: 20px;
+    }
+
+    label {
+      display: block;
+      margin-bottom: 8px;
+      font-weight: 700;
+      font-size: 0.9rem;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      color: #555;
+    }
+
+    input[type="text"],
+    input[type="password"] {
+      width: 100%;
+      padding: 12px;
+      font-size: 1rem;
+      border: 1px solid #ddd;
+      box-sizing: border-box; /* Ensures padding doesn't break width */
+      transition: border-color 0.3s;
+    }
+
+    input:focus {
+      outline: none;
+      border-color: var(--color-gold);
+    }
+
+    /* --- GOLD BUTTON --- */
+    button {
+      width: 100%;
+      padding: 14px;
+      background-color: var(--color-gold);
+      color: var(--color-black);
+      border: 1px solid var(--color-gold);
+      font-size: 1rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      margin-top: 10px;
+    }
+
+    button:hover {
+      background-color: var(--color-black);
+      color: var(--color-gold);
+      border-color: var(--color-black);
+    }
+
+    /* --- MESSAGES --- */
+    .message {
+      text-align: center;
+      margin-top: 20px;
+      padding: 10px;
+      font-size: 0.9rem;
+    }
+
+    .error {
+      background-color: #fee2e2;
+      color: #b91c1c;
+      border: 1px solid #fecaca;
+    }
+
+    .success {
+      background-color: #dcfce7;
+      color: #15803d;
+      border: 1px solid #bbf7d0;
+    }
+
+    .back-link {
+      display: block;
+      text-align: center;
+      margin-top: 20px;
+      color: #666;
+      text-decoration: none;
+      font-size: 0.9rem;
+    }
+
+    .back-link:hover {
+      text-decoration: underline;
+    }
+  </style>
 </head>
 <body>
 
-<h2>Login</h2>
+<div class="login-header">
+  <div class="logo">
+    THE <span class="gold-text">DAILY</span> NEWS
+  </div>
+</div>
 
-<form th:action="@{/login}" method="post">
-  <div>
-    <label>Email:</label>
-    <input type="text" name="username" required />
+<div class="login-container">
+  <h2>Sign In</h2>
+
+  <form th:action="@{/login}" method="post">
+    <div class="form-group">
+      <label>Email Address</label>
+      <input type="text" name="username" placeholder="name@example.com" required />
+    </div>
+
+    <div class="form-group">
+      <label>Password</label>
+      <input type="password" name="password" placeholder="••••••••" required />
+    </div>
+
+    <button type="submit">Sign In</button>
+  </form>
+
+  <div th:if="${param.error}" class="message error">
+    Invalid email or password.
   </div>
 
-  <div>
-    <label>Password:</label>
-    <input type="password" name="password" required />
+  <div th:if="${param.logout}" class="message success">
+    You have been logged out securely.
   </div>
 
-  <button type="submit">Login</button>
-</form>
-
-<p th:if="${param.error}" style="color:red;">
-  Invalid credentials
-</p>
-
-<p th:if="${param.logout}" style="color:green;">
-  Logged out successfully
-</p>
+  <a href="http://localhost:8080/register" class="back-link">Need an account? Subscribe</a>
+</div>
 
 </body>
 </html>

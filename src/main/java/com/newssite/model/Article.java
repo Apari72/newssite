@@ -22,22 +22,14 @@ public class Article {
     private Integer views = 0;
 
     private LocalDateTime createdAt = LocalDateTime.now();
+    private String imageUrl;
+    private String category;
 
-    /**
-     * Prevent infinite loop:
-     * Article -> User -> Articles -> User -> ...
-     * Also prevents leaking sensitive fields.
-     */
+    @Column(length = 500)
+    private String summary;
+
     @Transient
     private boolean canEdit;
-
-    public boolean isCanEdit() {
-        return canEdit;
-    }
-
-    public void setCanEdit(boolean canEdit) {
-        this.canEdit = canEdit;
-    }
 
     @ManyToOne
     @JoinColumn(name = "author_id")
@@ -47,10 +39,16 @@ public class Article {
     @Column(name = "like_count", nullable = false)
     private Integer likeCount = 0;
 
+    // ------------------- NEW ADDITION FOR DELETE FIX -------------------
     /**
-     * Prevent infinite loop:
-     * Article -> Comments -> Article -> Comments -> ...
+     * This fixes the "DataIntegrityViolationException".
+     * It tells Hibernate: "If this Article is deleted, delete all its Likes too."
      */
+    @OneToMany(mappedBy = "article", cascade = CascadeType.ALL, orphanRemoval = true)
+    @JsonIgnore
+    private List<Like> likes;
+    // -------------------------------------------------------------------
+
     @OneToMany(mappedBy = "article", cascade = CascadeType.ALL, orphanRemoval = true)
     @JsonIgnore
     private List<Comment> comments;
@@ -97,6 +95,38 @@ public class Article {
         this.createdAt = createdAt;
     }
 
+    public String getImageUrl() {
+        return imageUrl;
+    }
+
+    public void setImageUrl(String imageUrl) {
+        this.imageUrl = imageUrl;
+    }
+
+    public String getCategory() {
+        return category;
+    }
+
+    public void setCategory(String category) {
+        this.category = category;
+    }
+
+    public String getSummary() {
+        return summary;
+    }
+
+    public void setSummary(String summary) {
+        this.summary = summary;
+    }
+
+    public boolean isCanEdit() {
+        return canEdit;
+    }
+
+    public void setCanEdit(boolean canEdit) {
+        this.canEdit = canEdit;
+    }
+
     public User getAuthor() {
         return author;
     }
@@ -112,6 +142,16 @@ public class Article {
     public void setLikeCount(Integer likeCount) {
         this.likeCount = likeCount;
     }
+
+    // ------------------- NEW GETTER/SETTER FOR LIKES -------------------
+    public List<Like> getLikes() {
+        return likes;
+    }
+
+    public void setLikes(List<Like> likes) {
+        this.likes = likes;
+    }
+    // -------------------------------------------------------------------
 
     public List<Comment> getComments() {
         return comments;

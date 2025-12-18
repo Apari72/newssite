@@ -8,7 +8,8 @@ import com.newssite.repository.ArticleRepository;
 import com.newssite.repository.UserRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
+import com.newssite.dto.ArticleSummaryDto;
+import java.util.stream.Collectors;
 import java.util.List;
 
 @Service
@@ -44,7 +45,7 @@ public class ArticleService {
     }
 
     // ---------- GET ALL ----------
-    public List<Article> getAllArticles(String email) {
+    public List<ArticleSummaryDto> getAllArticles(String email) {
 
         User user = null;
         if (email != null) {
@@ -53,16 +54,10 @@ public class ArticleService {
 
         List<Article> articles = articleRepository.findAll();
 
-        for (Article article : articles) {
-            boolean canEdit =
-                    user != null &&
-                            (user.getRole() == Role.ADMIN ||
-                                    article.getAuthor().getId().equals(user.getId()));
-
-            article.setCanEdit(canEdit);
-        }
-
-        return articles;
+        // Convert the raw Entities into your DTOs
+        return articles.stream()
+                .map(this::toSummaryDto) // This converts Entity -> DTO (populating journalistName)
+                .collect(Collectors.toList());
     }
 
 
@@ -95,11 +90,16 @@ public class ArticleService {
         return new ArticleSummaryDto(
                 article.getId(),
                 article.getTitle(),
+                article.getAuthor().getId(),
                 article.getAuthor().getName(),
                 article.getCreatedAt(),
                 article.getViews(),
-                article.getLikeCount()
+                article.getLikeCount(),
+                article.getSummary(),
+                article.getCategory(),
+                article.getImageUrl()
         );
+
     }
     @Transactional
     public Article updateArticle(Long id, String title, String content, String email) {

@@ -45,7 +45,7 @@ public class ArticleController {
 
 
     @GetMapping
-    public List<Article> list(Authentication authentication) {
+    public List<ArticleSummaryDto> list(Authentication authentication) { // Change return type
         return articleService.getAllArticles(
                 authentication != null ? authentication.getName() : null
         );

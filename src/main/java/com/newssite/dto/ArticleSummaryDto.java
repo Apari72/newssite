@@ -6,7 +6,14 @@ public class ArticleSummaryDto {
 
     public Long id;
     public String title;
-    public String authorName;
+
+    public Long journalistId;
+    public String journalistName;
+
+    public String summary;
+    public String category;
+    public String imageUrl;
+
     public LocalDateTime createdAt;
     public int views;
     public int likeCount;
@@ -14,16 +21,25 @@ public class ArticleSummaryDto {
     public ArticleSummaryDto(
             Long id,
             String title,
-            String authorName,
+            Long journalistId,
+            String journalistName,
             LocalDateTime createdAt,
             int views,
-            int likeCount
+            int likeCount,
+            String summary,
+            String category,
+            String imageUrl
     ) {
         this.id = id;
         this.title = title;
-        this.authorName = authorName;
+        this.journalistId = journalistId;
+        this.journalistName = journalistName;
         this.createdAt = createdAt;
         this.views = views;
         this.likeCount = likeCount;
+        this.summary = summary;
+        this.category = category;
+        this.imageUrl = imageUrl;
     }
 }
+

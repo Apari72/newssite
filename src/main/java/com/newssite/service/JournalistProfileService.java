@@ -33,11 +33,16 @@ public class JournalistProfileService {
         return new ArticleSummaryDto(
                 article.getId(),
                 article.getTitle(),
+                article.getAuthor().getId(),
                 article.getAuthor().getName(),
                 article.getCreatedAt(),
                 article.getViews(),
-                article.getLikeCount()
+                article.getLikeCount(),
+                article.getSummary(),
+                article.getCategory(),
+                article.getImageUrl()
         );
+
     }
 
 
