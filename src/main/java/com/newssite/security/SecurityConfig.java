@@ -11,6 +11,9 @@ import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
+import java.util.Arrays;
+import java.util.List;
+
 @Configuration
 public class SecurityConfig {
 
@@ -22,7 +25,6 @@ public class SecurityConfig {
                 .csrf(csrf -> csrf.disable())
 
                 .authorizeHttpRequests(auth -> auth
-
                         // ---------- PUBLIC PAGES ----------
                         .requestMatchers(
                                 "/",
@@ -33,9 +35,10 @@ public class SecurityConfig {
                                 "/images/**",
                                 "/uploads/**"
                         ).permitAll()
-                        .requestMatchers("/uploads/**").permitAll()
+
                         // ---------- PUBLIC API (READ ONLY) ----------
                         .requestMatchers(HttpMethod.GET, "/api/articles/**").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/api/auth/me").permitAll() // Allow checking session
 
                         // ---------- AUTHENTICATED USER ACTIONS ----------
                         .requestMatchers(
@@ -69,12 +72,17 @@ public class SecurityConfig {
                 // ---------- LOGIN ----------
                 .formLogin(form -> form
                         .loginPage("/login")
-                        .defaultSuccessUrl("http://localhost:5173/", true)
+                        // IMPORTANT: On success, redirect to the Vercel frontend
+                        // Note: locally this might redirect you to vercel too, which is fine
+                        .defaultSuccessUrl("https://newssite-frontend-zeta.vercel.app/", true)
                         .permitAll()
                 )
 
                 // ---------- LOGOUT ----------
-                .logout(logout -> logout.permitAll());
+                .logout(logout -> logout
+                        .logoutSuccessUrl("https://newssite-frontend-zeta.vercel.app/")
+                        .permitAll()
+                );
 
         return http.build();
     }
@@ -88,7 +96,13 @@ public class SecurityConfig {
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration config = new CorsConfiguration();
         config.setAllowCredentials(true);
-        config.addAllowedOrigin("http://localhost:5173");
+
+        // CRITICAL: Allow BOTH Localhost AND Vercel
+        config.setAllowedOrigins(List.of(
+                "http://localhost:5173",
+                "https://newssite-frontend-zeta.vercel.app"
+        ));
+
         config.addAllowedHeader("*");
         config.addAllowedMethod("*");
 

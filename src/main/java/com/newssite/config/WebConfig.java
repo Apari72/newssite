@@ -11,10 +11,11 @@ public class WebConfig implements WebMvcConfigurer {
     public void addCorsMappings(CorsRegistry registry) {
         registry.addMapping("/**")
                 .allowedOrigins(
-                        "http://localhost:5173",  // Keep this for local testing
-                        "https://YOUR-PROJECT-NAME.vercel.app" // <--- PASTE YOUR REAL VERCEL URL HERE
+                        "http://localhost:5173",                 // Local React
+                        "https://newssite-frontend-zeta.vercel.app" // Vercel React
                 )
                 .allowedMethods("GET", "POST", "PUT", "DELETE", "OPTIONS")
+                .allowedHeaders("*")
                 .allowCredentials(true);
     }
 }
