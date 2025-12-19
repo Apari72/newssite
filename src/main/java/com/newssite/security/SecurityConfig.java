@@ -11,7 +11,6 @@ import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
-import java.util.Arrays;
 import java.util.List;
 
 @Configuration
@@ -38,7 +37,7 @@ public class SecurityConfig {
 
                         // ---------- PUBLIC API (READ ONLY) ----------
                         .requestMatchers(HttpMethod.GET, "/api/articles/**").permitAll()
-                        .requestMatchers(HttpMethod.GET, "/api/auth/me").permitAll() // Allow checking session
+                        .requestMatchers(HttpMethod.GET, "/api/auth/me").permitAll()
 
                         // ---------- AUTHENTICATED USER ACTIONS ----------
                         .requestMatchers(
@@ -72,15 +71,15 @@ public class SecurityConfig {
                 // ---------- LOGIN ----------
                 .formLogin(form -> form
                         .loginPage("/login")
-                        // IMPORTANT: On success, redirect to the Vercel frontend
-                        // Note: locally this might redirect you to vercel too, which is fine
-                        .defaultSuccessUrl("https://newssite-frontend-zeta.vercel.app/", true)
+                        // FIXED: Redirect to Vercel Frontend, NOT Render Backend
+                        .defaultSuccessUrl("https://newssite-frontend.vercel.app/", true)
                         .permitAll()
                 )
 
                 // ---------- LOGOUT ----------
                 .logout(logout -> logout
-                        .logoutSuccessUrl("https://newssite-frontend-zeta.vercel.app/")
+                        // FIXED: Redirect to Vercel Frontend on logout
+                        .logoutSuccessUrl("https://newssite-frontend.vercel.app/")
                         .permitAll()
                 );
 
@@ -97,10 +96,10 @@ public class SecurityConfig {
         CorsConfiguration config = new CorsConfiguration();
         config.setAllowCredentials(true);
 
-        // CRITICAL: Allow BOTH Localhost AND Vercel
+        // FIXED: Allow your actual Vercel URL to bypass CORS
         config.setAllowedOrigins(List.of(
                 "http://localhost:5173",
-                "https://newssite-frontend-zeta.vercel.app"
+                "https://newssite-frontend.vercel.app"
         ));
 
         config.addAllowedHeader("*");
