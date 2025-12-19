@@ -24,7 +24,6 @@ public class SecurityConfig {
                 .csrf(csrf -> csrf.disable())
 
                 .authorizeHttpRequests(auth -> auth
-                        // ---------- PUBLIC PAGES ----------
                         .requestMatchers(
                                 "/",
                                 "/login",
@@ -35,22 +34,18 @@ public class SecurityConfig {
                                 "/uploads/**"
                         ).permitAll()
 
-                        // ---------- PUBLIC API (READ ONLY) ----------
                         .requestMatchers(HttpMethod.GET, "/api/articles/**").permitAll()
                         .requestMatchers(HttpMethod.GET, "/api/auth/me").permitAll()
 
-                        // ---------- AUTHENTICATED USER ACTIONS ----------
                         .requestMatchers(
                                 "/api/articles/*/like",
                                 "/api/comments/**",
                                 "/api/journalists/**"
                         ).authenticated()
 
-                        // ---------- IMAGE UPLOAD ----------
                         .requestMatchers(HttpMethod.POST, "/api/uploads/**")
                         .hasAnyRole("ADMIN", "JOURNALIST")
 
-                        // ---------- ARTICLE WRITE / EDIT / DELETE ----------
                         .requestMatchers(HttpMethod.POST, "/api/articles")
                         .hasAnyRole("ADMIN", "JOURNALIST")
 
@@ -60,25 +55,19 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.DELETE, "/api/articles/**")
                         .hasAnyRole("ADMIN", "JOURNALIST")
 
-                        // ---------- ADMIN ----------
                         .requestMatchers("/admin/**").hasRole("ADMIN")
                         .requestMatchers("/api/admin/**").hasRole("ADMIN")
 
-                        // ---------- FALLBACK ----------
                         .anyRequest().authenticated()
                 )
 
-                // ---------- LOGIN ----------
                 .formLogin(form -> form
                         .loginPage("/login")
-                        // FIXED: Redirect to Vercel Frontend, NOT Render Backend
                         .defaultSuccessUrl("https://newssite-frontend.vercel.app/", true)
                         .permitAll()
                 )
 
-                // ---------- LOGOUT ----------
                 .logout(logout -> logout
-                        // FIXED: Redirect to Vercel Frontend on logout
                         .logoutSuccessUrl("https://newssite-frontend.vercel.app/")
                         .permitAll()
                 );
@@ -96,10 +85,11 @@ public class SecurityConfig {
         CorsConfiguration config = new CorsConfiguration();
         config.setAllowCredentials(true);
 
-        // FIXED: Allow your actual Vercel URL to bypass CORS
-        config.setAllowedOrigins(List.of(
+        // MODIFIED: Use setAllowedOriginPatterns to support Vercel's preview links
+        config.setAllowedOriginPatterns(List.of(
                 "http://localhost:5173",
-                "https://newssite-frontend.vercel.app"
+                "https://newssite-frontend.vercel.app",
+                "https://*-ahmed-akif-aparis-projects.vercel.app"
         ));
 
         config.addAllowedHeader("*");
